@@ -1,4 +1,4 @@
-package com.weiyang.trade.web.portal.util;
+package com.weiyang.trade.web.portal.utils;
 
 import java.math.BigDecimal;
 

@@ -31,7 +31,7 @@
     delete from goods
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.weiyang.trade.goods.db.model.Goods">
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.weiyang.trade.goods.db.model.Goods">
     insert into goods (id, title, number, 
       brand, image, description, 
       price, status, keywords, 

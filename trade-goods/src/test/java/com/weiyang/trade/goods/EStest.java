@@ -1,7 +1,9 @@
 package com.weiyang.trade.goods;
 
 import com.alibaba.fastjson.JSON;
+import com.weiyang.trade.goods.db.model.Goods;
 import com.weiyang.trade.goods.model.Person;
+import com.weiyang.trade.goods.service.SearchService;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -31,6 +33,8 @@ public class EStest {
 
     @Autowired
     private RestHighLevelClient client;
+    @Autowired
+    private SearchService searchService;
 
     @Test
     public void testES() {
@@ -172,5 +176,57 @@ public class EStest {
         }
 
         System.out.println(JSON.toJSONString(personList));
+    }
+
+    @Test
+    public void addGoodsToES() {
+//        Goods goods = new Goods();
+//        goods.setTitle("华为mate50 pro");
+//        goods.setBrand("华为");
+//        goods.setCategory("手机");
+//        goods.setNumber("NO12360");
+//        goods.setImage("test");
+//        goods.setDescription("华为mate50 新品手机 曜金黑 8G+256G 全网通");
+//        goods.setKeywords("华为mate50 新品手机 曜金黑");
+//        goods.setSaleNum(58);
+//        goods.setAvailableStock(10000);
+//        goods.setPrice(899999);
+//        goods.setStatus(1);
+//        goods.setId(25L);
+//        searchService.addGoodsToES(goods);
+
+        Goods goods = new Goods();
+        goods.setTitle("三星 glaxy note2");
+        goods.setBrand("三星");
+        goods.setCategory("手机");
+        goods.setNumber("NO123458");
+        goods.setImage("test");
+        goods.setDescription("三星 SAMSUNG Galaxy S22 超视觉夜拍系统超清夜景 超电影影像系统 超耐用精工设计 8GB+128GB 曜夜黑 5G手机");
+        goods.setKeywords("三星 SAMSUNG Galaxy");
+        goods.setSaleNum(78);
+        goods.setAvailableStock(10000);
+        goods.setPrice(899999);
+        goods.setStatus(1);
+        searchService.addGoodsToES(goods);
+
+        goods = new Goods();
+        goods.setTitle("iPhone 12 pro max");
+        goods.setBrand("苹果 Apple");
+        goods.setCategory("手机");
+        goods.setNumber("NO123458");
+        goods.setImage("test");
+        goods.setDescription("Iphone 12 pro max");
+        goods.setKeywords("苹果 手机 apple");
+        goods.setSaleNum(76);
+        goods.setAvailableStock(10000);
+        goods.setPrice(109999);
+        goods.setStatus(1);
+        searchService.addGoodsToES(goods);
+    }
+
+    @Test
+    public void goodsSearch(){
+        List<Goods> goodsList = searchService.searchGoodsList("曜金黑", 0, 10);
+        System.out.println(JSON.toJSONString(goodsList));
     }
 }

@@ -4,6 +4,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.weiyang.trade.goods.db.dao.GoodsDao;
 import com.weiyang.trade.goods.db.model.Goods;
 import com.weiyang.trade.goods.service.GoodsService;
+import com.weiyang.trade.goods.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +13,18 @@ public class GoodsServiceImpl implements GoodsService {
     @Autowired
     private GoodsDao goodsDao;
 
+    @Autowired
+    private SearchService searchService;
+
 
     @Override
     public Boolean insertGoods(Goods good) {
-        return goodsDao.insertGoods(good);
+
+        // add to db
+        boolean res = goodsDao.insertGoods(good);
+        // add to ES
+        searchService.addGoodsToES(good);
+        return res;
     }
 
     @Override

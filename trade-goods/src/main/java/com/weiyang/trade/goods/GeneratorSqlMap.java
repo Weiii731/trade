@@ -37,5 +37,9 @@ public class GeneratorSqlMap {
         Configuration config = configurationParser.parseConfiguration(configFile);
         MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warningInfos);
         myBatisGenerator.generate(null);
+
+        for (String warning : warningInfos) {
+            System.out.println(warning);
+        }
     }
 }

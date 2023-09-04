@@ -14,6 +14,7 @@ public class GoodsDaoImpl implements GoodsDao {
     @Override
     public boolean insertGoods(Goods goods) {
         int result = goodsMapper.insert(goods);
+
         return result > 0;
     }
 
