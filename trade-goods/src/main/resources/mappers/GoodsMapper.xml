@@ -196,4 +196,30 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <!-- 锁定库存 -->
+  <update id="lockStock" parameterType="java.lang.Long">
+    update goods
+    set available_stock = available_stock - 1,
+        lock_stock      = lock_stock + 1
+    where id = #{id,jdbcType=BIGINT}
+      and available_stock &gt; 0
+  </update>
+
+  <!-- 减少现有库存 -->
+  <update id="deductStock" parameterType="java.lang.Long">
+    UPDATE goods
+    SET lock_stock = lock_stock - 1,
+        sale_num = sale_num + 1
+    WHERE id = #{id, jdbcType=BIGINT}
+  </update>
+
+  <!--  订单超时 锁定库存回补 -->
+  <update id="revertStock" parameterType="java.lang.Long">
+    UPDATE goods
+    SET available_stock = available_stock + 1,
+        lock_stock = lock_stock - 1
+    WHERE id = #{id, jdbcType=BIGINT}
+  </update>
+
 </mapper>

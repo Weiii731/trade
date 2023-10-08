@@ -14,4 +14,10 @@ public interface GoodsMapper {
     int updateByPrimaryKeySelective(Goods record);
 
     int updateByPrimaryKey(Goods record);
+
+    int lockStock(Long id);
+
+    int deductStock(Long id);
+
+    int revertStock(Long id);
 }

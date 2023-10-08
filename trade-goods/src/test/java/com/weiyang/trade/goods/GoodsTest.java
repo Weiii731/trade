@@ -68,6 +68,14 @@ public class GoodsTest {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+    }
 
+    @Test
+    public void lockStcok() {
+        try {
+            goodsDao.lockStock(21L);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 }

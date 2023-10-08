@@ -31,4 +31,25 @@ public interface GoodsDao {
      * @return
      */
     Goods queryGoodsById(Long id);
+
+    /**
+     * lock stock
+     * @param id
+     * @return
+     */
+    boolean lockStock(Long id);
+
+    /**
+     * 删减库存
+     * @param id
+     * @return
+     */
+    boolean deductStock(Long id);
+
+    /**
+     * 订单超时 回滚库存
+     * @param id
+     * @return
+     */
+    boolean revertStock(Long id);
 }

@@ -34,4 +34,22 @@ public class GoodsDaoImpl implements GoodsDao {
     public Goods queryGoodsById(Long id) {
         return goodsMapper.selectByPrimaryKey(id);
     }
+
+    @Override
+    public boolean lockStock(Long id) {
+        int result = goodsMapper.lockStock(id);
+        return result > 0;
+    }
+
+    @Override
+    public boolean deductStock(Long id) {
+        int result = goodsMapper.deductStock(id);
+        return result > 0;
+    }
+
+    @Override
+    public boolean revertStock(Long id) {
+        int result = goodsMapper.revertStock(id);
+        return result > 0;
+    }
 }
