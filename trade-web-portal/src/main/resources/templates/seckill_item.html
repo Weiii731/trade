@@ -390,8 +390,12 @@
                                                                     <div class="a-section a-spacing-micro"><span
                                                                             class="a-price a-text-price a-size-medium"
                                                                             data-a-size="b" data-a-color="price"><span
-                                                                            class="a-offscreen"></span><span
-                                                                            aria-hidden="true" th:text="'$'+${showPrice}"></span></span>
+                                                                            class="a-offscreen"></span>
+                                                                        <h3>Lightning Deal</h3>
+                                                                        <span aria-hidden="true"
+                                                                              th:text="'$'+${seckillPrice}"></span></span>
+
+                                                                        <h5>original price  <del th:text="'$'+${oldPrice}"></del></h5>
                                                                     </div>
                                                                 </div>
                                                                 <div id="regulatoryDeposit_feature_div"
@@ -952,7 +956,7 @@
                                                                                              id="submit.buy-now-announce"
                                                                                              class="a-button-text"
                                                                                              aria-hidden="true">
-                                                                                         <a th:href="'/buy/123456/' + ${goods.id}"
+                                                                                         <a th:href="'/seckill/buy/1234/' + ${seckillActivity.id}"
                                                                                             target="_blank"
                                                                                             class="sui-btn  btn-danger addshopcar"> Buy Now </a>
                                                                                         </span>

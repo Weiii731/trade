@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.weiyang.trade.goods.db.model.Goods;
 import com.weiyang.trade.goods.service.GoodsService;
 import com.weiyang.trade.goods.service.SearchService;
+import com.weiyang.trade.lightning.deal.db.model.SeckillActivity;
+import com.weiyang.trade.lightning.deal.service.SeckillActivityService;
 import com.weiyang.trade.order.db.model.Order;
 import com.weiyang.trade.order.service.OrderService;
 import com.weiyang.trade.web.portal.utils.CommonUtils;
@@ -30,6 +32,9 @@ public class PortalController {
 
     @Autowired
     OrderService orderService;
+
+    @Autowired
+    SeckillActivityService seckillActivityService;
 
     /**
      * 跳转到主页面
@@ -143,5 +148,54 @@ public class PortalController {
             resultMap.put("errorInfo", e.getMessage());
             return "error";
         }
+    }
+
+    /**
+     * 秒杀活动详情页
+     *
+     * @param resultMap
+     * @param seckillId
+     * @return
+     */
+    @RequestMapping("/seckill/{seckillId}")
+    public String seckillInfo(Map<String, Object> resultMap, @PathVariable long seckillId) {
+        try {
+            SeckillActivity seckillActivity = seckillActivityService.querySeckillActivityById(seckillId);
+            if (seckillActivity == null) {
+                log.error("秒杀的对应的活动信息 没有查询到 seckillId:{} ", seckillId);
+                throw new RuntimeException("秒杀的对应的活动信息 没有查询到");
+            }
+            log.info("seckillId={},seckillActivity={}", seckillId, JSON.toJSON(seckillActivity));
+            String seckillPrice = CommonUtils.changeF2Y(seckillActivity.getSeckillPrice());
+            String oldPrice = CommonUtils.changeF2Y(seckillActivity.getOldPrice());
+            Goods goods = goodsService.queryGoodsById(seckillActivity.getGoodsId());
+            if (goods == null) {
+                log.error("秒杀的对应的商品信息 没有查询到 seckillId:{} goodsId:{}", seckillId, seckillActivity.getGoodsId());
+                throw new RuntimeException("秒杀的对应的商品信息 没有查询到");
+            }
+
+            resultMap.put("seckillActivity", seckillActivity);
+            resultMap.put("seckillPrice", seckillPrice);
+            resultMap.put("oldPrice", oldPrice);
+            resultMap.put("goods", goods);
+            return "seckill_item";
+        } catch (Exception e) {
+            log.error("获取秒杀信息详情页失败 get seckillInfo error,errorMessage:{}", e.getMessage());
+            resultMap.put("errorInfo", e.getMessage());
+            return "error";
+        }
+    }
+
+    /**
+     * 获取秒杀活动列表
+     *
+     * @param resultMap
+     * @return
+     */
+    @RequestMapping("/seckill/list")
+    public String activityList(Map<String, Object> resultMap) {
+        List<SeckillActivity> seckillActivities = seckillActivityService.queryActivitysByStatus(1);
+        resultMap.put("seckillActivities", seckillActivities);
+        return "seckill_activity_list";
     }
 }

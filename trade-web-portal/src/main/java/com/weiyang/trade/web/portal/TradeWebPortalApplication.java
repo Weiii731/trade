@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @EnableRabbit
 @ComponentScan(basePackages = {"com.weiyang"})
-@MapperScan({"com.weiyang.trade.goods.db.mappers","com.weiyang.trade.order.db.mappers"})
+@MapperScan({"com.weiyang.trade.goods.db.mappers","com.weiyang.trade.order.db.mappers", "com.weiyang.trade.lightning.deal.db.mappers"})
 @SpringBootApplication
 public class TradeWebPortalApplication {
 
