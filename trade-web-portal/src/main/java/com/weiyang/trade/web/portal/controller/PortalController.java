@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -197,5 +198,16 @@ public class PortalController {
         List<SeckillActivity> seckillActivities = seckillActivityService.queryActivitysByStatus(1);
         resultMap.put("seckillActivities", seckillActivities);
         return "seckill_activity_list";
+    }
+
+    @ResponseBody
+    @RequestMapping("/seckill/buy/{seckillId}")
+    public String seckillInfoBase(@PathVariable long seckillId) {
+        boolean res = seckillActivityService.processSeckillReqBase(seckillId);
+        if (res) {
+            return "商品抢购成功";
+        } else {
+            return "商品抢购失败, 商品已经售完";
+        }
     }
 }

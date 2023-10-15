@@ -18,6 +18,8 @@ public class LightningDealTest {
     @Autowired
     private SeckillActivityDao seckillActivityDao;
 
+
+
     @Test
     public void insertGoodsTest() {
         System.out.println("Hello");

@@ -28,4 +28,11 @@ public interface SeckillActivityDao {
      * @return
      */
     List<SeckillActivity> queryActivitysByStatus(int status);
+
+    /**
+     * 更新可用库存
+     * @param id
+     * @return
+     */
+    boolean updateAvailableStockByPrimaryKey(long id);
 }
