@@ -17,6 +17,14 @@
         <java.version>1.8</java.version>
     </properties>
     <dependencies>
+        <!--  订单模块 -->
+        <dependency>
+            <groupId>com.weiyang</groupId>
+            <artifactId>trade-order</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- spring 配置文件-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

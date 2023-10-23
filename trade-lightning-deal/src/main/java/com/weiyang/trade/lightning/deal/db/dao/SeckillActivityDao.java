@@ -35,4 +35,25 @@ public interface SeckillActivityDao {
      * @return
      */
     boolean updateAvailableStockByPrimaryKey(long id);
+
+    /**
+     * 锁定库存
+     * @param id
+     * @return
+     */
+    boolean lockStock(Long id);
+
+    /**
+     * 付款后 减少库存
+     * @param id
+     * @return
+     */
+    boolean deductStock(Long id);
+
+    /**
+     * 付款失败 或 订单过时 回滚库存
+     * @param id
+     * @return
+     */
+    boolean revertStock(Long id);
 }

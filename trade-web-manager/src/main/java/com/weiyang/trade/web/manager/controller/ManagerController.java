@@ -5,6 +5,7 @@ import com.weiyang.trade.goods.db.model.Goods;
 import com.weiyang.trade.goods.service.GoodsService;
 import com.weiyang.trade.lightning.deal.db.model.SeckillActivity;
 import com.weiyang.trade.lightning.deal.service.SeckillActivityService;
+import com.weiyang.trade.lightning.deal.utils.RedisWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,10 +22,13 @@ import java.util.Objects;
 public class ManagerController {
 
     @Autowired
-    GoodsService goodsService;
+    private GoodsService goodsService;
 
     @Autowired
-    SeckillActivityService seckillActivityService;
+    private SeckillActivityService seckillActivityService;
+
+    @Autowired
+    private RedisWorker redisWorker;
 
     /**
      * homepage
@@ -143,6 +147,11 @@ public class ManagerController {
             seckillActivity.setCreateTime(new Date());
             seckillActivityService.insertSeckillActivity(seckillActivity);
             resultMap.put("seckillActivity", seckillActivity);
+
+            // 将活动id 和 库存加入到 redis 里面 (创建时 活动没有id)
+//            redisWorker.setValue("ActivityId: " + seckillActivity.getId(), seckillActivity.getAvailableStock().toString());
+
+
             return "add_skill_activity";
         } catch (Exception e) {
             log.error("addSkillActivityAction error", e);

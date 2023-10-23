@@ -1,43 +1,37 @@
-package com.weiyang.trade.order.mq;
+package com.weiyang.trade.lightning.deal.mq;
 
 import com.alibaba.fastjson.JSON;
-import com.weiyang.trade.goods.service.GoodsService;
+import com.weiyang.trade.lightning.deal.service.SeckillActivityService;
 import com.weiyang.trade.order.db.dao.OrderDao;
 import com.weiyang.trade.order.db.model.Order;
+import com.weiyang.trade.order.service.LimitBuyService;
+import com.weiyang.trade.order.utils.RedisWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
-/**
- * 消息消费类，订单支付状态交易
- */
-
 @Component
 @Slf4j
-public class OrderPayCheckReceiver {
+public class SeckillPayTimeOutReceiver {
 
     @Autowired
-    private OrderDao orderDao;
+    SeckillActivityService seckillActivityService;
 
     @Autowired
-    private GoodsService goodsService;
+    OrderDao orderDao;
 
-    /**
-     * 消息处理
-     * @param msg
-     */
-    @RabbitListener(queues = "order.pay.status.check.queue")
+    @Autowired
+    LimitBuyService limitBuyService;
+
+    @Autowired
+    RedisWorker redisWorker;
+
+    @RabbitListener(queues = "seckill.order.pay.status.check.queue")
     public void process(String msg) {
         log.info("接收到消息内容:{}", msg);
         Order order = JSON.parseObject(msg, Order.class);
-        /*
-         * 只处理普通商品订单
-         */
-        if (order.getActivityType() != 0) {
-            log.info("不处理秒杀订单, 返回");
+        if (order.getActivityType() != 1) {
             return;
         }
         // 1.查询订单消息
@@ -49,7 +43,11 @@ public class OrderPayCheckReceiver {
             // 3. 更新订单状态为关闭
             orderDao.updateOrder(orderInfo);
             // 4. 将锁定库存补回
-            goodsService.revertStock(orderInfo.getGoodsId());
+            seckillActivityService.revertStock(orderInfo.getGoodsId());
+            // 5. 移除限购名单
+            limitBuyService.removeLimitMember(order.getActivityId(), order.getUserId());
+            // 6. 回滚redis里的库存
+            // Todo - 回滚redis里的库存
         }
     }
 }

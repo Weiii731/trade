@@ -39,4 +39,24 @@ public class SeckillActivityDaoImpl implements SeckillActivityDao {
         int result = seckillActivityMapper.updateAvailableStockByPrimaryKey(id);
         return result > 0;
     }
+
+    @Override
+    public boolean lockStock(Long id) {
+        int result = seckillActivityMapper.lockStock(id);
+        return result > 0;
+    }
+
+    @Override
+    public boolean deductStock(Long id) {
+        int result = seckillActivityMapper.deductStock(id);
+        return result > 0;
+    }
+
+    @Override
+    public boolean revertStock(Long id) {
+        int result = seckillActivityMapper.revertStock(id);
+        return result > 0;
+    }
+
+
 }

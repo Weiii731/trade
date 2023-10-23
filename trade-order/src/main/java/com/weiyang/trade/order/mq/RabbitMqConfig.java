@@ -42,7 +42,7 @@ public class RabbitMqConfig {
     }
 
     /**
-     * 实际消费队列，用来订单支付状态查询 （普通队列）
+     * 实际消费队列，用来查询订单支付状态 （普通队列）
      *
      * @return
      */
@@ -107,4 +107,73 @@ public class RabbitMqConfig {
                 "order.pay.status.check",
                 null);
     }
+
+    /**
+     * 创建订单队列 (普通队列)
+     * @return
+     */
+    @Bean
+    public Queue createOrderQueue() {
+        Queue queue = new Queue("create.order.queue", true, false, false);
+        return queue;
+    }
+
+    /**
+     * 订单状态效验, 绑定
+     * 订单状态效验队列 绑定到交换机
+     * @return
+     */
+    @Bean
+    public Binding createOrderBinding() {
+        return new Binding("create.order.queue",
+                Binding.DestinationType.QUEUE,
+                "order-event-exchange",
+                "to.create.order",
+                null);
+    }
+
+    /**
+     * 秒杀订单支付成功消息
+     * @return
+     */
+    @Bean
+    public Queue seckillPaySuccessQueue() {
+        Queue queue = new Queue("seckill.order.pay.success.queue", true, false, false);
+        return queue;
+    }
+
+    @Bean
+    public Binding seckillPaySuccessBinding() {
+        return new Binding("seckill.order.pay.success.queue",
+                Binding.DestinationType.QUEUE,
+                "order-event-exchange",
+                "seckill.order.pay.success",
+                null);
+    }
+
+    /**
+     * 秒杀订单支付状态检查消息
+     * @return
+     */
+    @Bean
+    public Queue seckillPayTimeOutCheckQueue() {
+        Queue queue = new Queue("seckill.order.pay.status.check.queue", true, false, false);
+        return queue;
+    }
+
+    /**
+     * 秒杀订单支付超时 绑定
+     * 秒杀订单支付超时队列 绑定到交换机
+     * @return
+     */
+    @Bean
+    public Binding seckillPayTimeOutBinding() {
+        return new Binding("seckill.order.pay.status.check.queue",
+                Binding.DestinationType.QUEUE,
+                "order-event-exchange",
+                "order.pay.status.check",
+                null);
+    }
+
+
 }

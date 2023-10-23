@@ -22,7 +22,7 @@ public class RedisTest {
 
     @Test
     void setActivityIdTest() {
-        redisWorker.setValue("ActivityId: 4", 29L);
+        redisWorker.setValue("ActivityId: 4", "29");
     }
 
     @Test

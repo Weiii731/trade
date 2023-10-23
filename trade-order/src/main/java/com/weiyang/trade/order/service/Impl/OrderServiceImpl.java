@@ -29,6 +29,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     OrderMessageSender orderMessageSender;
 
+
     /**
      * datacenterId;  数据中心
      * machineId;     机器标识
@@ -37,10 +38,19 @@ public class OrderServiceImpl implements OrderService {
      */
     private SnowflakeIdWorker snowFlake = new SnowflakeIdWorker(6, 8);
 
+    /**
+     * 创建订单和库存锁定在一个事务中, 要么同时成功, 要么同时失败
+     * 使用 @Transactional(rollbackFor = Exception.class)
+     *
+     * @param userId
+     * @param goodsId
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Order createOrder(long userId, long goodsId) {
         Order order = new Order();
+        // 普通商品购买默认无活动
         order.setId(snowFlake.nextId());
         order.setActivityId(0L);
         order.setActivityType(0);
@@ -71,17 +81,9 @@ public class OrderServiceImpl implements OrderService {
             log.error("order lock stock error order={}", JSON.toJSONString(order));
             throw new RuntimeException("订单锁定库存失败");
         }
-
-        //4. 创建订单
         order.setPayPrice(goods.getPrice());
-        boolean res = orderDao.insertOrder(order);
-        if (!res) {
-            log.error("order insert error order={}", JSON.toJSONString(order));
-            throw new RuntimeException("订单生成失败");
-        }
-
-        //5. 发送订单支付状态检查消息
-        orderMessageSender.sendPayStatusCheckDelayMessage(JSON.toJSONString(order));
+        //4. 创建订单, 发送创建订单消息
+        orderMessageSender.sendCreateOrderMessage(JSON.toJSONString(order));
         return order;
     }
 
@@ -125,10 +127,11 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // 库存扣减
-        boolean deductResult = goodsService.deductStock(order.getGoodsId());
-        if (!deductResult) {
-            log.error("orderId={} 库存扣减失败", orderId);
-            throw new RuntimeException("库存扣减失败");
+        if (order.getActivityType() != 1) {
+            goodsService.deductStock(order.getGoodsId());
+        } else {
+            orderMessageSender.sendSeckillPaySuccessMessage(JSON.toJSONString(order));
         }
+
     }
 }

@@ -210,4 +210,19 @@ public class PortalController {
             return "商品抢购失败, 商品已经售完";
         }
     }
+
+    @RequestMapping("/seckill/buy/{userId}/{activityId}")
+    public ModelAndView lightningDeal(@PathVariable long userId, @PathVariable long activityId) {
+        ModelAndView modelAndView = new ModelAndView();
+        try {
+            Order order = seckillActivityService.processLightningDeal(userId, activityId);
+            modelAndView.addObject("resultInfo", "秒杀抢购成功");
+            modelAndView.addObject("orderId", order.getId());
+            modelAndView.setViewName("buy_result");
+        } catch (Exception e) {
+            modelAndView.addObject("errorInfo", e.getMessage());
+            modelAndView.setViewName("error");
+        }
+        return modelAndView;
+    }
 }

@@ -24,6 +24,7 @@ public class GoodsServiceImpl implements GoodsService {
         boolean res = goodsDao.insertGoods(good);
         // add to ES
         searchService.addGoodsToES(good);
+
         return res;
     }
 
