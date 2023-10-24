@@ -1,6 +1,8 @@
 package com.weiyang.trade.lightning.deal.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.weiyang.trade.goods.db.model.Goods;
+import com.weiyang.trade.goods.service.GoodsService;
 import com.weiyang.trade.lightning.deal.db.dao.SeckillActivityDao;
 import com.weiyang.trade.lightning.deal.db.model.SeckillActivity;
 import com.weiyang.trade.lightning.deal.service.SeckillActivityService;
@@ -28,6 +30,9 @@ public class SeckillActivityServiceImpl implements SeckillActivityService {
 
     @Autowired
     private LimitBuyService limitBuyService;
+
+    @Autowired
+    private GoodsService goodsService;
 
     /**
      * datacenterId;  数据中心
@@ -156,6 +161,20 @@ public class SeckillActivityServiceImpl implements SeckillActivityService {
     public boolean revertStock(long activityId) {
         log.info("秒杀活动回补库存 seckillActivityId:{}", activityId);
         return seckillActivityDao.revertStock(activityId);
+    }
+
+    @Override
+    public void pushSeckillActivityInfoToCache(long id) {
+        SeckillActivity seckillActivity = seckillActivityDao.querySeckillActivityById(id);
+        //库存信息
+        redisWorker.setValue("stock:" + id, Long.valueOf(seckillActivity.getAvailableStock()));
+
+        //活动完整信息
+        redisWorker.setValue("seckillActivity:" + seckillActivity.getId(), JSON.toJSONString(seckillActivity));
+
+        //活动对应的商品信息
+        Goods goods = goodsService.queryGoodsById(seckillActivity.getGoodsId());
+        redisWorker.setValue("seckillActivity_goods:" + seckillActivity.getGoodsId(), JSON.toJSONString(goods));
     }
 
 }

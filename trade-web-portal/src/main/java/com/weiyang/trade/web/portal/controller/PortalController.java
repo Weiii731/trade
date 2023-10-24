@@ -8,6 +8,7 @@ import com.weiyang.trade.lightning.deal.db.model.SeckillActivity;
 import com.weiyang.trade.lightning.deal.service.SeckillActivityService;
 import com.weiyang.trade.order.db.model.Order;
 import com.weiyang.trade.order.service.OrderService;
+import com.weiyang.trade.order.utils.RedisWorker;
 import com.weiyang.trade.web.portal.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class PortalController {
 
     @Autowired
     SeckillActivityService seckillActivityService;
+
+    @Autowired
+    RedisWorker redisWorker;
 
     /**
      * 跳转到主页面
@@ -161,7 +165,16 @@ public class PortalController {
     @RequestMapping("/seckill/{seckillId}")
     public String seckillInfo(Map<String, Object> resultMap, @PathVariable long seckillId) {
         try {
-            SeckillActivity seckillActivity = seckillActivityService.querySeckillActivityById(seckillId);
+
+            SeckillActivity seckillActivity;
+            String seckillActivityInfo = redisWorker.getValueByKey("seckillActivity:" + seckillId);
+            if (!seckillActivityInfo.isEmpty()) {
+                // 从缓存里调数据
+                seckillActivity = JSON.parseObject(seckillActivityInfo, SeckillActivity.class);
+                log.info("命中秒杀活动缓存:{}", seckillActivityInfo);
+            } else {
+                seckillActivity = seckillActivityService.querySeckillActivityById(seckillId);
+            }
             if (seckillActivity == null) {
                 log.error("秒杀的对应的活动信息 没有查询到 seckillId:{} ", seckillId);
                 throw new RuntimeException("秒杀的对应的活动信息 没有查询到");
@@ -169,7 +182,16 @@ public class PortalController {
             log.info("seckillId={},seckillActivity={}", seckillId, JSON.toJSON(seckillActivity));
             String seckillPrice = CommonUtils.changeF2Y(seckillActivity.getSeckillPrice());
             String oldPrice = CommonUtils.changeF2Y(seckillActivity.getOldPrice());
-            Goods goods = goodsService.queryGoodsById(seckillActivity.getGoodsId());
+
+            Goods goods;
+            String goodsInfo = redisWorker.getValueByKey("seckillActivity_goods:" + seckillActivity.getGoodsId());
+            if (!goodsInfo.isEmpty()) {
+                // 从缓存里调出数据
+                goods = JSON.parseObject(goodsInfo, Goods.class);
+                log.info("命中商品缓存:{}", goodsInfo);
+            } else {
+                goods = goodsService.queryGoodsById(seckillActivity.getGoodsId());
+            }
             if (goods == null) {
                 log.error("秒杀的对应的商品信息 没有查询到 seckillId:{} goodsId:{}", seckillId, seckillActivity.getGoodsId());
                 throw new RuntimeException("秒杀的对应的商品信息 没有查询到");

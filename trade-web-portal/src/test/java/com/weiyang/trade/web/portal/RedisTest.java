@@ -1,6 +1,6 @@
-package com.weiyang.trade.lightning.deal;
+package com.weiyang.trade.web.portal;
 
-import com.weiyang.trade.lightning.deal.utils.RedisWorker;
+import com.weiyang.trade.order.utils.RedisWorker;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

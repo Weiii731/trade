@@ -5,7 +5,6 @@ import com.weiyang.trade.goods.db.model.Goods;
 import com.weiyang.trade.goods.service.GoodsService;
 import com.weiyang.trade.lightning.deal.db.model.SeckillActivity;
 import com.weiyang.trade.lightning.deal.service.SeckillActivityService;
-import com.weiyang.trade.lightning.deal.utils.RedisWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,9 +25,6 @@ public class ManagerController {
 
     @Autowired
     private SeckillActivityService seckillActivityService;
-
-    @Autowired
-    private RedisWorker redisWorker;
 
     /**
      * homepage
@@ -157,6 +153,28 @@ public class ManagerController {
             log.error("addSkillActivityAction error", e);
             return "500";
         }
+    }
+
+    /**
+     * 跳转到推送缓存预热页面
+     *
+     * @return
+     */
+    @RequestMapping("/pushSeckillCache")
+    public String pushSeckillCache() {
+        return "push_seckill_cache";
+    }
+
+    /**
+     * 将对应的秒杀活动信息写入缓存中
+     * @param seckillId
+     * @return
+     */
+    @RequestMapping("/pushSeckillCacheAction")
+    public String pushSkilCache(@RequestParam("seckillId") long seckillId) {
+        //将秒杀库存写入缓存中
+        seckillActivityService.pushSeckillActivityInfoToCache(seckillId);
+        return "push_seckill_cache";
     }
 
 }
